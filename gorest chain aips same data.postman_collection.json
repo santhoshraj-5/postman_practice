@@ -1,0 +1,216 @@
+{
+	"info": {
+		"_postman_id": "824a75c4-c183-44f3-a3c1-a8d026deba33",
+		"name": "gorest chain aips same data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30807943"
+	},
+	"item": [
+		{
+			"name": "creat user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"user created\",()=>{\r",
+							"    pm.response.to.have.status(201)\r",
+							"})\r",
+							"//get id of user and store in variable to access in collection\r",
+							"const user_id=JSON.parse(responseBody);\r",
+							"pm.collectionVariables.set(\"id\",user_id.id);\r",
+							"//pm.variables.set(\"id\",user_id.id);\r",
+							"//display current user id\r",
+							"//console.log(pm.collectionVariables.get(\"id\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"santa\",\r\n     \"email\": \"santa4@g.co\",\r\n     \"gender\": \"male\",\r\n     \"status\": \"inactive\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"validating user have correct data\",()=> {\r",
+							"    var jsondata=pm.response.json();\r",
+							" pm.expect(jsondata.name).to.eql(\"santa\")\r",
+							" pm.expect(jsondata.email).to.eql(\"santa4@g.co\")\r",
+							" pm.expect(jsondata.gender).to.eql(\"male\")\r",
+							" pm.expect(jsondata.status).to.eql(\"inactive\")\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"validating user edited data\",()=> {\r",
+							"    var jsondata=pm.response.json();\r",
+							" pm.expect(jsondata.name).to.eql(\"santhosh\")\r",
+							"// pm.expect(jsondata.email).to.eql()\r",
+							" //pm.expect(jsondata.gender).to.eql()\r",
+							" pm.expect(jsondata.status).to.eql(\"active\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"santhosh\",\r\n     \"status\": \"active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"deleted success\",()=>{\r",
+							"    pm.response.to.have.status(204)\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "4b19a45e6e023b6d2106570d73542ad97971c86fdcc867120670d273227fd88e",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "gorest_url",
+			"value": "https://gorest.co.in",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": ""
+		}
+	]
+}

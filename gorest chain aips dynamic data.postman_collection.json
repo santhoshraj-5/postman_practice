@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "c464a148-ce11-4968-9fa8-80bcfefc7486",
+		"name": "gorest chain aips dynamic data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30807943"
+	},
+	"item": [
+		{
+			"name": "creat user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//we need to genereate random name so use this\r",
+							"var random_name =Math.random().toString(36).substring(2);\r",
+							"\r",
+							"var user_name=\"santa\"+random_name;\r",
+							"var user_email=\"santa\"+random_name+\"@gmail.com\";\r",
+							"\r",
+							"//now lets store this name on local variable because we cant send\r",
+							"pm.collectionVariables.set(\"name\",user_name);\r",
+							"pm.collectionVariables.set(\"email\",user_email);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"user created\",()=>{\r",
+							"    pm.response.to.have.status(201)\r",
+							"})\r",
+							"//get id of user and store in variable to access in collection\r",
+							"const user_id=JSON.parse(responseBody);\r",
+							"pm.collectionVariables.set(\"id\",user_id.id);\r",
+							"//pm.variables.set(\"id\",user_id.id);\r",
+							"//display current user id\r",
+							"//console.log(pm.collectionVariables.get(\"id\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n     \"email\": \"{{email}}\",\r\n     \"gender\": \"male\",\r\n     \"status\": \"inactive\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"pm.test(\"validating user have correct data\",()=> {\r",
+							"    var jsondata=pm.response.json();\r",
+							" pm.expect(jsondata.name).to.eql(pm.collectionVariables.get(\"name\"))\r",
+							" pm.expect(jsondata.email).to.eql(pm.collectionVariables.get(\"email\"))//\"\"\r",
+							" pm.expect(jsondata.gender).to.eql(\"male\")\r",
+							" pm.expect(jsondata.status).to.eql(\"inactive\")\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit new user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"validating user edited data\",()=> {\r",
+							"    var jsondata=pm.response.json();\r",
+							" pm.expect(jsondata.name).to.eql(pm.collectionVariables.get(\"e_name\"));\r",
+							" pm.expect(jsondata.email).to.eql(pm.collectionVariables.get(\"e_email\"));\r",
+							" //pm.expect(jsondata.gender).to.eql()\r",
+							" pm.expect(jsondata.status).to.eql(\"active\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"//we need to genereate random name so use this\r",
+							"var random_name =Math.random().toString(36).substring(2);\r",
+							"\r",
+							"var edit_name=\"santhosh\"+random_name;\r",
+							"var edit_email=\"sh\"+random_name+\"@gmail.com\";\r",
+							"console.log(edit_email);\r",
+							"\r",
+							"pm.collectionVariables.set(\"e_name\",edit_name);\r",
+							"pm.collectionVariables.set(\"e_email\",edit_email);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{e_name}}\",\r\n    \"email\":\"{{e_email}}\",\r\n     \"status\": \"active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"deleted success\",()=>{\r",
+							"    pm.response.to.have.status(204)\r",
+							"})\r",
+							"pm.collectionVariables.unset(\"id\")\r",
+							"pm.collectionVariables.unset(\"name\")\r",
+							"pm.collectionVariables.unset(\"email\")\r",
+							"pm.collectionVariables.unset(\"e_name\")\r",
+							"pm.collectionVariables.unset(\"e_email\")"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{gorest_url}}/public/v2/users/{{id}}",
+					"host": [
+						"{{gorest_url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "4b19a45e6e023b6d2106570d73542ad97971c86fdcc867120670d273227fd88e",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "gorest_url",
+			"value": "https://gorest.co.in",
+			"type": "string"
+		}
+	]
+}
